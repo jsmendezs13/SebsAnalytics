@@ -20,8 +20,9 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preload" href="/fonts/lora.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/lato-400.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/site.css">
-<script src="/js/home.js" defer></script>
+<link rel="stylesheet" href="/site.css?v=74435c9d">
+<script src="/js/home.js?v=7a55d3cd" defer></script>
+<script src="/js/eagle.js?v=00cf7fd6" defer></script>
 </head>
 <body>
 <div id="top" style="background: #FFFFFF; color: #1E2025; font-family: 'Lato', Arial, sans-serif; font-size: 17px; line-height: 1.6">
@@ -31,7 +32,7 @@
   <!-- HEADER -->
   <header style="background: #FFFFFF">
     <div class="site-head" style="max-width: 1240px; margin: 0 auto; padding: 10px clamp(20px, 4vw, 40px); box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px">
-      <a href="/" aria-label="Seb's Analytics, home" style="display: block"><img src="/img/logo.webp" alt="Seb's Analytics LLC" style="height: 72px; width: auto; display: block" width="680" height="240" decoding="async"></a>
+      <a href="/" class="brand" aria-label="Seb's Analytics, home" style="display: flex; align-items: center; gap: 12px; text-decoration: none; min-height: 52px"><svg width="52" height="52" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#001E97"/><path fill="#FFFFFF" transform="translate(23.51 80.60) scale(0.08743 -0.08743)" d="M454 476Q445 532 422.0 569.5Q399 607 363.5 626.0Q328 645 281 644Q238 644 205.5 620.0Q173 596 173 558Q173 527 190.5 504.0Q208 481 244.0 461.0Q280 441 335 418Q373 403 413.0 383.0Q453 363 487.0 335.5Q521 308 542.0 271.5Q563 235 563 186Q563 127 531.0 81.0Q499 35 441.5 9.5Q384 -16 307 -16Q267 -16 220.5 -3.5Q174 9 133 33L136 -9H59V225H125Q139 141 189.5 98.5Q240 56 310 56Q346 56 373.0 69.0Q400 82 415.0 103.5Q430 125 430 150Q430 185 405.5 208.0Q381 231 344.5 247.0Q308 263 270 278Q222 298 180.5 320.5Q139 343 108.0 372.0Q77 401 60.0 438.5Q43 476 43 525Q43 556 55.0 589.5Q67 623 94.0 651.5Q121 680 166.0 698.0Q211 716 277 716Q317 716 364.5 704.0Q412 692 446 668L442 709H520V476Z"/></svg><span style="font-family: 'Lora', Georgia, serif; font-weight: 700; font-size: 24px; color: #001E97; letter-spacing: 0.005em">Seb&rsquo;s Analytics</span></a>
       <nav aria-label="Main" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 26px; font-family: 'Lora', Georgia, serif; font-weight: 600; font-size: 16px">
         <a href="#system" style="color: #001E97; text-decoration: none">The system</a>
         <a href="#research" style="color: #001E97; text-decoration: none">Research</a>
@@ -48,23 +49,26 @@
 
   <!-- WHY -->
   <section style="background: #001E97; color: #FFFFFF; position: relative; overflow: hidden">
-    <svg viewBox="0 0 1440 360" preserveAspectRatio="none" style="position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 300px" aria-hidden="true">
-      <polygon points="0,360 0,230 160,170 300,215 470,110 600,170 760,60 900,140 1060,40 1220,120 1340,80 1440,110 1440,360" fill="#C6D6FF" opacity="0.35"></polygon>
-      <polygon points="0,360 0,280 200,220 360,260 540,170 700,230 880,150 1040,210 1220,160 1440,200 1440,360" fill="#EEF3FF"></polygon>
-      <polygon points="0,360 0,320 240,280 420,310 620,250 800,290 1000,240 1180,280 1440,260 1440,360" fill="#FFFFFF"></polygon>
-    </svg>
-    <div style="position: relative; max-width: 1240px; margin: 0 auto; padding: 80px clamp(20px, 4vw, 40px) 64px; box-sizing: border-box; text-align: center">
+    
+    <div class="hero-grid">
+      <div class="hero-art"><canvas id="eagle" role="img" aria-label="The Seb's Analytics eagle, drawn in fine moving lines, flying over mountains and a growth line whose arrow rises"></canvas></div>
+      <div class="hero-words">
       <p style="margin: 0; color: #C6D6FF; font-family: 'Lora', Georgia, serif; font-weight: 700; font-size: 15px; letter-spacing: 0.18em; text-transform: uppercase">Websites and booking for New York restaurants</p>
-      <h1 style="margin: 18px auto 0; max-width: 980px; font-family: 'Lora', Georgia, serif; font-weight: 700; font-size: clamp(42px, 6vw, 80px); line-height: 1.02; letter-spacing: -0.015em">Integrated websites, marketing and data analysis for restaurants.</h1>
-      <p style="margin: 24px auto 0; max-width: 720px; color: #D3E0FF; font-size: 20px">Website, menus, ratings, reservations, rewards, guest messages and an app for your team. No fee for each guest.</p>
+      <h1 style="margin: 18px auto 0; max-width: 980px; font-family: 'Lora', Georgia, serif; font-weight: 700; font-size: clamp(34px, 3.6vw, 54px); line-height: 1.07; letter-spacing: -0.015em">Integrated websites, marketing and data analysis for restaurants.</h1>
+      <p style="margin: 22px auto 0; max-width: 560px; color: #D3E0FF; font-size: 19px">Website, menus, ratings, reservations, rewards, guest messages and an app for your team. No fee for each guest.</p>
       <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 34px">
         <a href="#demo" style="background: #FFFFFF; color: #001E97; text-decoration: none; font-weight: 700; padding: 15px 30px; border-radius: 10px; min-height: 54px; box-sizing: border-box; display: inline-flex; align-items: center">Request a demo</a>
         <a href="#demo" style="background: transparent; color: #FFFFFF; text-decoration: none; font-weight: 700; padding: 15px 30px; border-radius: 10px; border: 2px solid #FFFFFF; min-height: 54px; box-sizing: border-box; display: inline-flex; align-items: center">Discuss your restaurant</a>
       </div>
-      <div style="position: relative; max-width: 1040px; margin: 64px auto 0; padding: 0 9%">
-        <img src="/img/dashboard.webp" alt="The manager dashboard on a computer: tonight's tables, arrivals and messages" style="width: 100%; height: auto; display: block; filter: drop-shadow(0 30px 50px rgba(0, 8, 50, 0.45))" width="1438" height="942" decoding="async">
-        <img src="/img/phone-booking.webp" alt="Booking a table on a phone" style="position: absolute; left: 0; bottom: -6%; width: 21%; height: auto; filter: drop-shadow(0 22px 36px rgba(0, 8, 50, 0.45))" width="620" height="1344" decoding="async">
-        <img src="/img/phone-notifications.webp" alt="Notifications from the restaurant on a phone's lock screen" style="position: absolute; right: 0; bottom: -6%; width: 21%; height: auto; filter: drop-shadow(0 22px 36px rgba(0, 8, 50, 0.45))" width="620" height="1344" decoding="async">
+      </div>
+    </div>
+  </section>
+  <section style="background: #FFFFFF">
+    <div style="max-width: 1240px; margin: 0 auto; padding: 56px clamp(20px, 4vw, 40px) 0; box-sizing: border-box">
+      <div style="position: relative; max-width: 1040px; margin: 0 auto; padding: 0 9%">
+        <img src="/img/dashboard.webp" alt="The manager dashboard on a computer: tonight's tables, arrivals and messages" style="width: 100%; height: auto; display: block; filter: drop-shadow(0 30px 50px rgba(0, 20, 80, 0.22))" width="1438" height="942" decoding="async">
+        <img src="/img/phone-booking.webp" alt="Booking a table on a phone" style="position: absolute; left: 0; bottom: -6%; width: 21%; height: auto; filter: drop-shadow(0 22px 36px rgba(0, 20, 80, 0.22))" width="620" height="1344" decoding="async">
+        <img src="/img/phone-notifications.webp" alt="Notifications from the restaurant on a phone's lock screen" style="position: absolute; right: 0; bottom: -6%; width: 21%; height: auto; filter: drop-shadow(0 22px 36px rgba(0, 20, 80, 0.22))" width="620" height="1344" decoding="async">
       </div>
     </div>
   </section><section style="background: #FFFFFF">
@@ -145,12 +149,9 @@
 
       <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 48px; margin-top: 96px">
         <div style="flex: 1 1 420px; min-width: 0">
-          <div role="img" aria-label="A wooden tap menu on a table: tap your phone on it and the menu opens" style="aspect-ratio: 4 / 3; border-radius: 24px; background: #EEF3FF; display: flex; align-items: center; justify-content: center; padding: 24px; box-sizing: border-box">
-            <div style="width: min(78%, 360px); aspect-ratio: 3 / 2; border-radius: 18px; background: linear-gradient(135deg, #D4A574 0%, #B9824E 55%, #A06A3A 100%); box-shadow: 0 18px 40px rgba(60, 30, 5, 0.28), inset 0 2px 0 rgba(255, 255, 255, 0.25); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: #4A2B10; text-align: center">
-              <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8.32a7.43 7.43 0 0 1 0 7.36"></path><path d="M9.46 6.21a11.76 11.76 0 0 1 0 11.58"></path><path d="M12.91 4.1a15.91 15.91 0 0 1 .01 15.8"></path><path d="M16.37 2a20.16 20.16 0 0 1 0 20"></path></svg>
-              <p style="margin: 0; font-family: 'Lora', Georgia, serif; font-weight: 700; font-size: clamp(18px, 2.2vw, 24px); letter-spacing: 0.04em">Tap for the menu</p>
-              <p style="margin: 0; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.8">or scan the QR code</p>
-            </div>
+          <div class="tap-video" style="position: relative; aspect-ratio: 16 / 9; border-radius: 24px; overflow: hidden; background: #EEF3FF; box-shadow: 0 18px 40px rgba(0, 20, 80, 0.16)">
+            <video id="tap-video" poster="/img/tap-menu.jpg" autoplay muted loop playsinline preload="metadata" width="1280" height="720" aria-label="A guest taps a phone on the table menu and the restaurant's menu opens on the phone" style="width: 100%; height: 100%; object-fit: cover; display: block"><source src="/img/tap-menu.mp4" type="video/mp4"><source src="/img/tap-menu.webm" type="video/webm"></video>
+            <button type="button" id="tap-toggle" class="vid-btn" aria-label="Pause the video" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="4" width="4" height="16" rx="1"></rect><rect x="14" y="4" width="4" height="16" rx="1"></rect></svg></button>
           </div>
         </div>
         <div style="flex: 1 1 460px; min-width: 0">
@@ -326,7 +327,8 @@
               <div class="field"><label for="b-rest">Restaurant or company</label><input id="b-rest" name="company" type="text" autocomplete="organization" maxlength="120" required></div>
               <div class="field"><label for="b-mail">Email</label><input id="b-mail" name="email" type="email" autocomplete="email" maxlength="120" required></div>
               <div class="field"><label for="b-phone">Phone</label><input id="b-phone" name="phone" type="tel" autocomplete="tel" maxlength="40" required></div>
-              <div class="field" style="flex-basis: 100%"><label for="b-addr">Restaurant address (where we meet)</label><input id="b-addr" name="address" type="text" autocomplete="street-address" maxlength="200" placeholder="123 Stone St, New York, NY" required></div>
+              <div class="field" style="flex: 3 1 320px"><label for="b-addr">Restaurant address (where we meet)</label><input id="b-addr" name="address" type="text" autocomplete="address-line1" maxlength="140" placeholder="930 DeKalb Ave, Brooklyn, NY 11221" required></div>
+              <div class="field" style="flex: 1 1 180px"><label for="b-addr2">Apt, suite or floor <span style="font-weight: 400; color: #5A6170">(optional)</span></label><input id="b-addr2" name="address2" type="text" autocomplete="address-line2" maxlength="60" placeholder="Suite 2"></div>
             </div>
             <div class="trap" aria-hidden="true"><label for="b-trap">Leave this empty</label><input id="b-trap" name="trap" type="text" tabindex="-1" autocomplete="off"></div>
             <button type="submit" id="demo-go" class="demo-go" disabled>Request a demo</button>
@@ -351,7 +353,7 @@
     <div style="max-width: 1240px; margin: 0 auto; padding: 56px clamp(20px, 4vw, 40px) 32px; box-sizing: border-box">
       <div style="display: flex; flex-wrap: wrap; gap: 40px; justify-content: space-between; align-items: flex-start">
         <div style="flex: 1 1 300px">
-          <img src="/img/logo-white.webp" alt="Seb's Analytics LLC" style="height: 80px; width: auto; display: block" width="680" height="240" loading="lazy" decoding="async">
+          <div style="display: flex; align-items: center; gap: 12px"><svg width="56" height="56" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#FFFFFF"/><path fill="#001E97" transform="translate(23.51 80.60) scale(0.08743 -0.08743)" d="M454 476Q445 532 422.0 569.5Q399 607 363.5 626.0Q328 645 281 644Q238 644 205.5 620.0Q173 596 173 558Q173 527 190.5 504.0Q208 481 244.0 461.0Q280 441 335 418Q373 403 413.0 383.0Q453 363 487.0 335.5Q521 308 542.0 271.5Q563 235 563 186Q563 127 531.0 81.0Q499 35 441.5 9.5Q384 -16 307 -16Q267 -16 220.5 -3.5Q174 9 133 33L136 -9H59V225H125Q139 141 189.5 98.5Q240 56 310 56Q346 56 373.0 69.0Q400 82 415.0 103.5Q430 125 430 150Q430 185 405.5 208.0Q381 231 344.5 247.0Q308 263 270 278Q222 298 180.5 320.5Q139 343 108.0 372.0Q77 401 60.0 438.5Q43 476 43 525Q43 556 55.0 589.5Q67 623 94.0 651.5Q121 680 166.0 698.0Q211 716 277 716Q317 716 364.5 704.0Q412 692 446 668L442 709H520V476Z"/></svg><span style="font-family: 'Lora', Georgia, serif; font-weight: 700; font-size: 24px; color: #FFFFFF">Seb&rsquo;s Analytics LLC</span></div>
           <p style="margin: 16px 0 0; font-size: 15px; max-width: 340px">Websites, systems and research for New York restaurants.</p>
         </div>
         <nav aria-label="Footer" style="flex: 0 1 auto; display: flex; flex-wrap: wrap; gap: 40px; font-size: 15px">

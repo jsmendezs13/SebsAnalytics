@@ -2,7 +2,7 @@
 //
 //   GET  /api/demo   which days and times are still open (New York time). Who booked is never shown:
 //                    a taken time is simply not in the list.
-//   POST /api/demo   book one: { day: "2026-11-12", slot: "11:00", name, company, email, phone, address }.
+//   POST /api/demo   book one: { day: "2026-11-12", slot: "11:00", name, company, email, phone, address, address2 }.
 //                    The address is the restaurant's: Sebastian gives the demos there (10 Nov).
 //                    The person gets an email with a calendar file; advisory@sebsanalytics.com gets
 //                    "New demo booked", and the demo waits in /admin with a "New" badge.
@@ -87,10 +87,14 @@ async function book(req, res) {
   const company = clean(body.company, 120);
   const email = sendableAddress(body.email);
   const phone = cleanPhone(body.phone);
-  const rawAddress = clean(body.address, 200);
-  const address = rawAddress && rawAddress.length >= 5 && /\p{L}/u.test(rawAddress) ? rawAddress : null;
-  const missing = [!name && 'your name', !company && 'your restaurant or company', !email && 'a valid email', !phone && 'a phone number', !address && 'your restaurant\u2019s address'].filter(Boolean);
-  if (missing.length) return send(res, 400, { error: `Please add ${missing.join(', ').replace(/, ([^,]*)$/, ' and $1')}.`, fields: { name: !name, company: !company, email: !email, phone: !phone, address: !address } });
+  // Sebastian, 10 Nov 18:05: two lines, the street address and (optional) the apartment, suite or floor
+  const line1 = clean(body.address, 140);
+  const line2 = body.address2 == null || String(body.address2).trim() === '' ? '' : clean(body.address2, 60);
+  const street = line1 && line1.length >= 5 && /\p{L}/u.test(line1) ? line1 : null;
+  const address = street && line2 !== null ? (line2 ? `${street}, ${line2}` : street) : null;
+  const missing = [!name && 'your name', !company && 'your restaurant or company', !email && 'a valid email', !phone && 'a phone number', !street && 'your restaurant\u2019s address', line2 === null && 'a valid apartment, suite or floor'].filter(Boolean);
+  const listed = missing.length < 2 ? missing.join('') : `${missing.slice(0, -1).join(', ')} and ${missing[missing.length - 1]}`;
+  if (missing.length) return send(res, 400, { error: `Please add ${listed}.`, fields: { name: !name, company: !company, email: !email, phone: !phone, address: !street, address2: line2 === null } });
 
   const day = String(body.day || '');
   const slot = String(body.slot || '');

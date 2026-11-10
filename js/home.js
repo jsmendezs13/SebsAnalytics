@@ -101,7 +101,7 @@
     if (pressed) pressed.focus();
   }
 
-  var FIELDS = { name: 'b-name', company: 'b-rest', email: 'b-mail', phone: 'b-phone', address: 'b-addr' };
+  var FIELDS = { name: 'b-name', company: 'b-rest', email: 'b-mail', phone: 'b-phone', address: 'b-addr', address2: 'b-addr2' };
   function mark(bad) {
     Object.keys(FIELDS).forEach(function (k) { $(FIELDS[k]).setAttribute('aria-invalid', String(Boolean(bad && bad[k]))); });
   }
@@ -112,9 +112,11 @@
       email: !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v('b-mail')),
       phone: v('b-phone').replace(/\D/g, '').length < 7,
       address: v('b-addr').length < 5,
+      address2: v('b-addr2').length > 60,
     };
-    var list = [bad.name && 'your name', bad.company && 'your restaurant or company', bad.email && 'a valid email', bad.phone && 'a phone number', bad.address && 'your restaurant\u2019s address'].filter(Boolean);
-    return { bad: bad, words: list.length ? 'Please add ' + list.join(', ').replace(/, ([^,]*)$/, ' and $1') + '.' : '' };
+    var list = [bad.name && 'your name', bad.company && 'your restaurant or company', bad.email && 'a valid email', bad.phone && 'a phone number', bad.address && 'your restaurant\u2019s address', bad.address2 && 'a valid apartment, suite or floor'].filter(Boolean);
+    var listed = list.length < 2 ? list.join('') : list.slice(0, -1).join(', ') + ' and ' + list[list.length - 1];
+    return { bad: bad, words: list.length ? 'Please add ' + listed + '.' : '' };
   }
 
   function book(ev) {
@@ -134,7 +136,7 @@
       method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify({
         day: state.day, slot: state.slot,
-        name: $('b-name').value, company: $('b-rest').value, email: email, phone: $('b-phone').value, address: $('b-addr').value,
+        name: $('b-name').value, company: $('b-rest').value, email: email, phone: $('b-phone').value, address: $('b-addr').value, address2: $('b-addr2').value,
         trap: $('b-trap').value,
       }),
     })
@@ -184,5 +186,27 @@
     });
     load(false);
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+  // The tap-menu video: plays by itself, muted, in a loop; a button pauses it; with "reduce motion" on it stays still.
+  var PAUSE = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="4" width="4" height="16" rx="1"></rect><rect x="14" y="4" width="4" height="16" rx="1"></rect></svg>';
+  var PLAY = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg>';
+  function video() {
+    var v = $('tap-video'), b = $('tap-toggle');
+    if (!v || !b) return;
+    v.muted = true;
+    function show(playing) {
+      b.innerHTML = playing ? PAUSE : PLAY;
+      b.setAttribute('aria-label', playing ? 'Pause the video' : 'Play the video');
+      b.setAttribute('aria-pressed', String(!playing));
+    }
+    var reduce = false;
+    try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+    if (reduce) { v.removeAttribute('autoplay'); v.pause(); show(false); }
+    v.addEventListener('play', function () { show(true); });
+    v.addEventListener('pause', function () { show(false); });
+    b.addEventListener('click', function () {
+      if (v.paused) { var p = v.play(); if (p && p.catch) p.catch(function () { show(false); }); } else v.pause();
+    });
+  }
+  function startAll() { video(); start(); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', startAll); else startAll();
 })();
