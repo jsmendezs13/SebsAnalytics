@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Demos · Seb's Analytics admin</title>
+<meta name="theme-color" content="#001E97">
+<link rel="icon" href="/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/site.css">
+<style>
+  body { background: #F5F8FF; font-size: 16px; line-height: 1.5; }
+  .bar { background: #FFFFFF; border-bottom: 1px solid #E3E8F2; }
+  .bar-in { max-width: 900px; margin: 0 auto; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 24px 20px 64px; box-sizing: border-box; }
+  h1, h2 { font-family: 'Lora', Georgia, serif; color: #001E97; }
+  h1 { font-size: 30px; margin: 0; line-height: 1.2; }
+  h2 { font-size: 21px; margin: 36px 0 12px; }
+  .card { background: #FFFFFF; border: 1px solid #E3E8F2; border-radius: 14px; padding: 18px; box-sizing: border-box; }
+  .btn { min-height: 44px; padding: 10px 18px; border-radius: 10px; border: 2px solid #001E97; background: #001E97; color: #FFFFFF; font: 700 15px 'Lato', Arial, sans-serif; cursor: pointer; }
+  .btn.light { background: #FFFFFF; color: #001E97; }
+  .btn.red { background: #B42318; border-color: #B42318; }
+  .btn.red-light { background: #FFFFFF; color: #B42318; border-color: #F1B8B2; }
+  .btn:disabled { opacity: 0.5; cursor: default; }
+  .link { background: none; border: none; padding: 8px 0; color: #0040C8; font: 700 15px 'Lato', Arial, sans-serif; cursor: pointer; text-decoration: underline; min-height: 44px; }
+  .pill { display: inline-block; border-radius: 999px; padding: 2px 10px; font-size: 12px; font-weight: 900; letter-spacing: 0.06em; text-transform: uppercase; vertical-align: middle; }
+  .pill.new { background: #B42318; color: #FFFFFF; }
+  .pill.gray { background: #EEF0F3; color: #5A6170; }
+  .day { margin: 22px 0 8px; font-weight: 900; color: #3A4150; font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .demo { display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: flex-start; margin-bottom: 10px; }
+  .demo.is-new { border: 2px solid #B42318; }
+  .demo .time { font-family: 'Lora', Georgia, serif; font-weight: 700; font-size: 22px; color: #001E97; min-width: 104px; }
+  .demo .who { flex: 1 1 260px; min-width: 0; overflow-wrap: anywhere; }
+  .demo .who b { font-size: 17px; }
+  .demo .acts { display: flex; gap: 8px; flex-wrap: wrap; }
+  .warn { margin: 6px 0 0; color: #8A4B00; background: #FFF4E0; border-radius: 8px; padding: 6px 10px; font-size: 14px; }
+  .confirm { flex-basis: 100%; border-top: 1px solid #E3E8F2; padding-top: 12px; margin-top: 4px; }
+  .confirm textarea { width: 100%; box-sizing: border-box; min-height: 70px; border: 1px solid #C9D0DC; border-radius: 10px; padding: 10px; font: 16px 'Lato', Arial, sans-serif; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+  .row label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; font-weight: 700; }
+  .row input, .row select { height: 44px; border: 1px solid #C9D0DC; border-radius: 10px; padding: 0 10px; font: 16px 'Lato', Arial, sans-serif; background: #FFFFFF; color: #1E2025; }
+  .closed-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 0; border-top: 1px solid #E3E8F2; }
+  .msg { margin: 12px 0 0; font-weight: 700; }
+  .msg.bad { color: #B42318; }
+  .msg.good { color: #267620; }
+  .msg:empty { display: none; }
+  .empty { color: #5A6170; margin: 8px 0; }
+  .code { height: 54px; width: 100%; max-width: 240px; box-sizing: border-box; border: 1px solid #C9D0DC; border-radius: 10px; padding: 0 14px; font: 700 26px 'Lato', Arial, sans-serif; letter-spacing: 0.3em; }
+  details summary { cursor: pointer; font-weight: 700; color: #001E97; min-height: 44px; display: flex; align-items: center; }
+</style>
+<script src="/js/admin.js" defer></script>
+</head>
+<body>
+<header class="bar">
+  <div class="bar-in">
+    <a href="/" aria-label="Seb's Analytics website"><img src="/img/logo.webp" alt="Seb's Analytics LLC" width="680" height="240" style="height: 48px; width: auto; display: block"></a>
+    <span style="font-family: 'Lora', Georgia, serif; font-weight: 700; color: #001E97">Admin</span>
+  </div>
+</header>
+
+<main class="wrap">
+  <p id="loading" class="empty">Loading…</p>
+
+  <!-- signing in -->
+  <section id="signin" hidden aria-labelledby="signin-title">
+    <div class="card" style="max-width: 460px; margin: 24px auto 0">
+      <h1 id="signin-title">Sign in</h1>
+      <div id="step-send">
+        <p style="margin: 10px 0 18px">We'll email a 6-digit code to <b>advisory@sebsanalytics.com</b>.</p>
+        <button type="button" id="send-code" class="btn">Send me a code</button>
+      </div>
+      <form id="step-code" hidden novalidate style="margin: 10px 0 0">
+        <p style="margin: 0 0 14px">We sent a code to <b>advisory@sebsanalytics.com</b>. It works for 10 minutes.</p>
+        <label for="code" style="display: block; font-weight: 700; font-size: 14px; margin-bottom: 4px">Code</label>
+        <input id="code" class="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="7" pattern="[0-9 ]*">
+        <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 16px">
+          <button type="submit" id="verify" class="btn">Sign in</button>
+          <button type="button" id="resend" class="link">Send a new code</button>
+        </div>
+      </form>
+      <p id="signin-msg" class="msg" role="alert"></p>
+    </div>
+  </section>
+
+  <!-- the demos -->
+  <section id="board" hidden>
+    <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px">
+      <h1>Demos <span id="new-count" class="pill new" hidden></span></h1>
+      <button type="button" id="refresh" class="btn light">Refresh</button>
+    </div>
+    <p id="board-msg" class="msg" role="status"></p>
+
+    <h2>Coming up</h2>
+    <div id="upcoming"></div>
+
+    <h2>Close a day or a time</h2>
+    <div class="card">
+      <p style="margin: 0 0 12px; color: #3A4150">Nobody can book a closed day or time. Demos already booked stay booked.</p>
+      <form id="close-form" class="row" novalidate>
+        <label>Day<input id="close-day" type="date" required></label>
+        <label>Time<select id="close-slot"><option value="">The whole day</option></select></label>
+        <button type="submit" class="btn">Close</button>
+      </form>
+      <p id="close-msg" class="msg" role="alert"></p>
+      <div id="closed-list" style="margin-top: 12px"></div>
+    </div>
+
+    <h2>Past and cancelled</h2>
+    <details class="card">
+      <summary>The last 60 days</summary>
+      <div id="past" style="margin-top: 8px"></div>
+    </details>
+
+    <div style="margin-top: 40px; display: flex; flex-wrap: wrap; gap: 10px">
+      <button type="button" id="sign-out" class="btn light">Sign out</button>
+      <button type="button" id="sign-out-all" class="btn light">Sign out on every device</button>
+    </div>
+  </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,44 @@
+/* sebsanalytics.com — the few styles every page shares. Most of the look is written on each
+   element (it came from the design canvas, Option B · Royal Summit, in Lora + Lato). */
+
+@font-face { font-family: 'Lora'; font-style: normal; font-weight: 400 700; font-display: swap; src: url('/fonts/lora.woff2') format('woff2'); }
+@font-face { font-family: 'Lato'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/lato-400.woff2') format('woff2'); }
+@font-face { font-family: 'Lato'; font-style: normal; font-weight: 700; font-display: swap; src: url('/fonts/lato-700.woff2') format('woff2'); }
+@font-face { font-family: 'Lato'; font-style: normal; font-weight: 900; font-display: swap; src: url('/fonts/lato-900.woff2') format('woff2'); }
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+body { margin: 0; background: #FFFFFF; color: #1E2025; font-family: 'Lato', Arial, sans-serif; overflow-x: hidden; }
+a { color: #0040C8; }
+a:hover { color: #001E97; }
+:focus-visible { outline: 3px solid #0052FF; outline-offset: 3px; }
+[hidden] { display: none !important; }
+section[id] { scroll-margin-top: 12px; }
+
+.skip { position: absolute; left: -9999px; top: 8px; z-index: 10; background: #FFFFFF; color: #001E97; padding: 10px 16px; border-radius: 8px; font-weight: 700; }
+.skip:focus { left: 8px; }
+
+/* ── the demo calendar ── */
+.cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.cal-nav { width: 44px; height: 44px; border-radius: 10px; border: 1px solid #C6D6FF; background: #FFFFFF; color: #001E97; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
+.cal-nav:disabled { opacity: 0.35; cursor: default; }
+.cal-day { height: 44px; width: 100%; border-radius: 10px; border: 1px solid #C6D6FF; background: #FFFFFF; color: #001E97; font: 700 15px 'Lato', Arial, sans-serif; cursor: pointer; padding: 0; }
+.cal-day:disabled { border-color: transparent; background: transparent; color: #9AA1AE; font-weight: 400; cursor: default; }
+.cal-day[aria-pressed="true"] { background: #001E97; border-color: #001E97; color: #FFFFFF; }
+.cal-time { height: 44px; width: 100%; border-radius: 10px; border: 2px solid #C6D6FF; background: #FFFFFF; color: #001E97; font: 700 15px 'Lato', Arial, sans-serif; cursor: pointer; }
+.cal-time[aria-pressed="true"] { background: #001E97; border-color: #001E97; color: #FFFFFF; }
+.cal-time:disabled { border-style: dashed; color: #9AA1AE; background: #F7F8FA; cursor: default; text-decoration: line-through; }
+.field { flex: 1 1 180px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.field label { font-size: 14px; font-weight: 700; }
+.field input { height: 46px; border: 1px solid #C9D0DC; border-radius: 10px; padding: 0 12px; font-size: 16px; font-family: inherit; color: #1E2025; background: #FFFFFF; box-sizing: border-box; width: 100%; }
+.field input[aria-invalid="true"] { border: 2px solid #B42318; }
+.trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.demo-go { margin-top: 20px; width: 100%; min-height: 56px; border: none; border-radius: 10px; background: #0052FF; color: #FFFFFF; font: 700 17px 'Lato', Arial, sans-serif; cursor: pointer; padding: 10px 16px; }
+.demo-go:disabled { background: #8EADFF; cursor: default; }
+.demo-error { margin: 14px 0 0; color: #B42318; font-weight: 700; }
+.demo-error:empty { display: none; }
+
+@media (max-width: 560px) {
+  .site-head { justify-content: center !important; }
+  .site-head nav { justify-content: center; }
+}
