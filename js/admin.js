@@ -97,6 +97,7 @@
         d.status === 'cancelled' ? el('span', { class: 'pill gray', text: 'Cancelled' }) : null]),
       el('div', null, [el('a', { href: 'mailto:' + d.email, text: d.email })]),
       el('div', null, [el('a', { href: 'tel:' + d.phone.replace(/[^0-9+]/g, ''), text: d.phone })]),
+      d.address ? el('div', null, [d.address + ' \u00b7 ', el('a', { href: 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(d.address), target: '_blank', rel: 'noopener', text: 'Map' })]) : null,
     ]);
     if (d.emailError) who.appendChild(el('p', { class: 'warn', text: 'Email to them not sent: ' + d.emailError }));
     else if (!d.emailSent && !past) who.appendChild(el('p', { class: 'warn', text: 'Email to them not sent yet.' }));

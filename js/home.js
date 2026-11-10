@@ -101,7 +101,7 @@
     if (pressed) pressed.focus();
   }
 
-  var FIELDS = { name: 'b-name', company: 'b-rest', email: 'b-mail', phone: 'b-phone' };
+  var FIELDS = { name: 'b-name', company: 'b-rest', email: 'b-mail', phone: 'b-phone', address: 'b-addr' };
   function mark(bad) {
     Object.keys(FIELDS).forEach(function (k) { $(FIELDS[k]).setAttribute('aria-invalid', String(Boolean(bad && bad[k]))); });
   }
@@ -111,8 +111,9 @@
       name: !v('b-name'), company: !v('b-rest'),
       email: !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v('b-mail')),
       phone: v('b-phone').replace(/\D/g, '').length < 7,
+      address: v('b-addr').length < 5,
     };
-    var list = [bad.name && 'your name', bad.company && 'your restaurant or company', bad.email && 'a valid email', bad.phone && 'a phone number'].filter(Boolean);
+    var list = [bad.name && 'your name', bad.company && 'your restaurant or company', bad.email && 'a valid email', bad.phone && 'a phone number', bad.address && 'your restaurant\u2019s address'].filter(Boolean);
     return { bad: bad, words: list.length ? 'Please add ' + list.join(', ').replace(/, ([^,]*)$/, ' and $1') + '.' : '' };
   }
 
@@ -133,7 +134,7 @@
       method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify({
         day: state.day, slot: state.slot,
-        name: $('b-name').value, company: $('b-rest').value, email: email, phone: $('b-phone').value,
+        name: $('b-name').value, company: $('b-rest').value, email: email, phone: $('b-phone').value, address: $('b-addr').value,
         trap: $('b-trap').value,
       }),
     })

@@ -2,7 +2,8 @@
 //
 //   GET  /api/demo   which days and times are still open (New York time). Who booked is never shown:
 //                    a taken time is simply not in the list.
-//   POST /api/demo   book one: { day: "2026-11-12", slot: "11:00", name, company, email, phone }.
+//   POST /api/demo   book one: { day: "2026-11-12", slot: "11:00", name, company, email, phone, address }.
+//                    The address is the restaurant's: Sebastian gives the demos there (10 Nov).
 //                    The person gets an email with a calendar file; advisory@sebsanalytics.com gets
 //                    "New demo booked", and the demo waits in /admin with a "New" badge.
 //
@@ -86,8 +87,10 @@ async function book(req, res) {
   const company = clean(body.company, 120);
   const email = sendableAddress(body.email);
   const phone = cleanPhone(body.phone);
-  const missing = [!name && 'your name', !company && 'your restaurant or company', !email && 'a valid email', !phone && 'a phone number'].filter(Boolean);
-  if (missing.length) return send(res, 400, { error: `Please add ${missing.join(', ').replace(/, ([^,]*)$/, ' and $1')}.`, fields: { name: !name, company: !company, email: !email, phone: !phone } });
+  const rawAddress = clean(body.address, 200);
+  const address = rawAddress && rawAddress.length >= 5 && /\p{L}/u.test(rawAddress) ? rawAddress : null;
+  const missing = [!name && 'your name', !company && 'your restaurant or company', !email && 'a valid email', !phone && 'a phone number', !address && 'your restaurant\u2019s address'].filter(Boolean);
+  if (missing.length) return send(res, 400, { error: `Please add ${missing.join(', ').replace(/, ([^,]*)$/, ' and $1')}.`, fields: { name: !name, company: !company, email: !email, phone: !phone, address: !address } });
 
   const day = String(body.day || '');
   const slot = String(body.slot || '');
@@ -114,15 +117,15 @@ async function book(req, res) {
 
   const saved = await sb('/sa_demos?select=id,starts_at', {
     method: 'POST', prefer: 'return=representation',
-    body: { starts_at: startsAt, name, company, email, email_key: emailKey, phone, ip_hash: ipHash },
+    body: { starts_at: startsAt, name, company, email, email_key: emailKey, phone, address, ip_hash: ipHash },
   });
   if (saved.status === 409) return send(res, 409, { error: 'Someone just took that time. Please pick another one.', code: 'TAKEN' });
   if (!saved.ok || !Array.isArray(saved.data) || !saved.data[0]) return send(res, 503, BUSY);
   const demo = saved.data[0];
 
   // The booking stands now. The emails go out; if one fails, the reason is written on the demo.
-  const booked = demoBookedEmail({ id: demo.id, startsAt, name });
-  const notice = demoNoticeEmail({ startsAt, name, company, email, phone });
+  const booked = demoBookedEmail({ id: demo.id, startsAt, name, address });
+  const notice = demoNoticeEmail({ startsAt, name, company, email, phone, address });
   const [toThem, toUs] = await Promise.all([
     sendEmail({ to: email, replyTo: ADMIN_EMAIL, ...booked, idempotencyKey: `sa-demo-${demo.id}-booked`, tags: [{ name: 'kind', value: 'demo_booked' }] }),
     sendEmail({ to: ADMIN_EMAIL, replyTo: email, ...notice, idempotencyKey: `sa-demo-${demo.id}-notice`, tags: [{ name: 'kind', value: 'demo_notice' }] }),

@@ -14,8 +14,23 @@ import { whenWords, TZ, DEMO_MINUTES } from './time.js';
 export const SITE = 'https://www.sebsanalytics.com';
 export const ADMIN_EMAIL = 'advisory@sebsanalytics.com';
 export const FROM = '"Seb\'s Analytics" <demos@send.sebsanalytics.com>';
-// Sebastian, 10 Nov: how the demo happens is still to be decided (a call, a video call or a visit).
-export const HOW_LINE = 'Before the demo we will contact you to confirm how we meet.';
+// Sebastian, 10 Nov 17:12: demos are only at the client's restaurant, so the form asks for its address.
+
+// The address goes back to the person only when it looks like an address: someone could type a link or an email
+// into the box and book with a stranger's email, to get those words into the stranger's inbox.
+export function plainAddress(value) {
+  const text = String(value || '').trim();
+  if (!/^[\p{L}\p{N} .,'#/&()\-\u2019]{5,120}$/u.test(text)) return '';
+  if (/https?|www\.|\.(com|net|org|io|co|info|ru|xyz)\b|@/i.test(text)) return '';
+  return text;
+}
+export function mapsLink(address) {
+  return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(String(address || ''));
+}
+function meetLine(address) {
+  const plain = plainAddress(address);
+  return plain ? `We will meet you at your restaurant: ${plain}.` : 'We will meet you at your restaurant, at the address you gave us.';
+}
 
 const RESEND_URL = 'https://api.resend.com/emails';
 const SEND_TIMEOUT_MS = 6000;
@@ -89,7 +104,7 @@ function oneLine(value, max) {
 }
 
 // ── the calendar file ─────────────────────────────────────────────────────────
-export function demoIcs({ id, startIso }) {
+export function demoIcs({ id, startIso, address }) {
   const start = new Date(startIso);
   const end = new Date(start.getTime() + DEMO_MINUTES * 60000);
   const stamp = (d) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
@@ -111,7 +126,8 @@ export function demoIcs({ id, startIso }) {
     `DTSTART:${stamp(start)}`,
     `DTEND:${stamp(end)}`,
     `SUMMARY:${esc('Demo with Seb\'s Analytics')}`,
-    `DESCRIPTION:${esc(`${HOW_LINE} To change the time or cancel, reply to the confirmation email or write to ${ADMIN_EMAIL}.`)}`,
+    ...(plainAddress(address) ? [`LOCATION:${esc(plainAddress(address))}`] : []),
+    `DESCRIPTION:${esc(`${meetLine(address)} To change the time or the place, or to cancel, reply to the confirmation email or write to ${ADMIN_EMAIL}.`)}`,
     'END:VEVENT', 'END:VCALENDAR',
   ].map(fold).join('\r\n') + '\r\n';
 }
@@ -155,7 +171,7 @@ function layout({ title, preheader, heading, intro, big, bigTime, rows, notice, 
 const FOOT = `Seb&#8217;s Analytics LLC &middot; New York, NY &middot; sebsanalytics.com`;
 
 // ── 1. to the person who booked ───────────────────────────────────────────────
-export function demoBookedEmail({ id, startsAt, name }) {
+export function demoBookedEmail({ id, startsAt, name, address }) {
   const w = whenWords(startsAt);
   const first = greetingName(name);
   const subject = `Your demo with Seb's Analytics: ${w.short} at ${w.time}`;
@@ -166,24 +182,24 @@ export function demoBookedEmail({ id, startsAt, name }) {
     intro: `${first ? escapeHtml(first) + ', thank' : 'Thank'} you for booking a demo with Seb&#8217;s Analytics. We will show you the whole system and answer your questions.`,
     big: w.long,
     bigTime: `${w.time} (New York time)`,
-    notice: `${escapeHtml(HOW_LINE)}<br>Need another time, or can&#8217;t make it? Just reply to this email.<br>The calendar file is attached: open it to add the demo to your calendar.`,
+    notice: `${escapeHtml(meetLine(address))}<br>Need another time or place, or can&#8217;t make it? Just reply to this email.<br>The calendar file is attached: open it to add the demo to your calendar.`,
     footer: `${FOOT}<br>Someone used this address to book a demo on sebsanalytics.com. If it wasn&#8217;t you, you can ignore this email.`,
   });
   const text = [
     `${first ? first + ', thank' : 'Thank'} you for booking a demo with Seb's Analytics.`, '',
     `${w.long}, ${w.year} at ${w.time} (New York time)`, '',
-    HOW_LINE,
-    'Need another time, or can\'t make it? Just reply to this email.', '',
+    meetLine(address),
+    'Need another time or place, or can\'t make it? Just reply to this email.', '',
     `Seb's Analytics LLC · New York, NY · ${SITE}`,
   ].join('\n');
   return {
     subject, html, text,
-    attachments: [{ filename: 'demo-seb-s-analytics.ics', content: Buffer.from(demoIcs({ id, startIso: startsAt }), 'utf8').toString('base64') }],
+    attachments: [{ filename: 'demo-seb-s-analytics.ics', content: Buffer.from(demoIcs({ id, startIso: startsAt, address }), 'utf8').toString('base64') }],
   };
 }
 
 // ── 2. to Sebastian: someone booked ───────────────────────────────────────────
-export function demoNoticeEmail({ startsAt, name, company, email, phone }) {
+export function demoNoticeEmail({ startsAt, name, company, email, phone, address }) {
   const e = escapeHtml;
   const w = whenWords(startsAt);
   const subject = `New demo: ${w.short}, ${w.time} · ${oneLine(company, 60)}`;
@@ -194,12 +210,14 @@ export function demoNoticeEmail({ startsAt, name, company, email, phone }) {
     intro: 'Someone booked a demo on sebsanalytics.com.',
     big: w.long,
     bigTime: `${w.time} (New York time)`,
-    rows: [['Name', e(name)], ['Company', e(company)], ['Email', e(email)], ['Phone', e(phone)]],
+    rows: [['Name', e(name)], ['Company', e(company)], ['Email', e(email)], ['Phone', e(phone)],
+           ['Where', `${e(address || 'No address given')}${address ? ` &middot; <a href="${e(mapsLink(address))}" style="color:${BRIGHT};">Google Maps</a>` : ''}`]],
     button: { label: 'Open the admin page', href: `${SITE}/admin` },
     footer: 'Sent by sebsanalytics.com to advisory@sebsanalytics.com.',
   });
   const text = [`New demo booked: ${w.long}, ${w.time} (New York time)`, '',
-    `Name: ${oneLine(name, 100)}`, `Company: ${oneLine(company, 120)}`, `Email: ${email}`, `Phone: ${oneLine(phone, 40)}`, '',
+    `Name: ${oneLine(name, 100)}`, `Company: ${oneLine(company, 120)}`, `Email: ${email}`, `Phone: ${oneLine(phone, 40)}`,
+    `Where: ${oneLine(address, 200) || 'No address given'}`, ...(address ? [`Google Maps: ${mapsLink(address)}`] : []), '',
     `Admin page: ${SITE}/admin`].join('\n');
   return { subject, html, text };
 }

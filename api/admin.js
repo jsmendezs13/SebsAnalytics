@@ -146,7 +146,7 @@ async function signOut(res, me, everywhere) {
 
 // ── the list ─────────────────────────────────────────────────────────────────
 const shape = (d) => ({
-  id: d.id, startsAt: d.starts_at, name: d.name, company: d.company, email: d.email, phone: d.phone,
+  id: d.id, startsAt: d.starts_at, name: d.name, company: d.company, email: d.email, phone: d.phone, address: d.address || null,
   status: d.status, isNew: !d.seen_at, bookedAt: d.created_at, cancelledAt: d.cancelled_at,
   emailSent: Boolean(d.email_sent_at), emailError: d.email_error || null, noticeError: d.notice_error || null,
 });
