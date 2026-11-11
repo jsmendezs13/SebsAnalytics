@@ -207,6 +207,69 @@
       if (v.paused) { var p = v.play(); if (p && p.catch) p.catch(function () { show(false); }); } else v.pause();
     });
   }
-  function startAll() { video(); start(); }
+  // The address box suggests real addresses while you type (api/address.js, OpenStreetMap data). Arrow keys and Enter
+  // pick one, Escape closes the list, and if the service doesn't answer it is simply a normal box.
+  function addressSuggestions() {
+    var box = $('b-addr'), list = $('addr-list'), note = $('addr-note');
+    if (!box || !list) return;
+    var items = [], active = -1, timer = 0, ctrl = null, lastQ = '';
+    function close() {
+      list.hidden = true; list.textContent = ''; items = []; active = -1;
+      box.setAttribute('aria-expanded', 'false'); box.removeAttribute('aria-activedescendant');
+    }
+    function highlight(i) {
+      active = i;
+      [].forEach.call(list.querySelectorAll('[role="option"]'), function (li, k) { li.setAttribute('aria-selected', String(k === i)); });
+      if (i >= 0) { box.setAttribute('aria-activedescendant', 'addr-opt-' + i); var el = $('addr-opt-' + i); if (el && el.scrollIntoView) el.scrollIntoView({ block: 'nearest' }); }
+      else box.removeAttribute('aria-activedescendant');
+    }
+    function choose(i) {
+      var s = items[i]; if (!s) return;
+      box.value = s.value; lastQ = s.value; close();
+      box.setAttribute('aria-invalid', 'false');
+      if (note) note.textContent = '✓ Address found';
+      var next = $('b-addr2'); if (next) next.focus();
+    }
+    function show(list2) {
+      items = list2; list.textContent = '';
+      if (!items.length) { close(); return; }
+      items.forEach(function (s, i) {
+        var li = document.createElement('li');
+        li.id = 'addr-opt-' + i; li.setAttribute('role', 'option'); li.setAttribute('aria-selected', 'false'); li.textContent = s.label;
+        li.addEventListener('mousedown', function (e) { e.preventDefault(); choose(i); });
+        list.appendChild(li);
+      });
+      var credit = document.createElement('li');
+      credit.className = 'addr-credit'; credit.setAttribute('role', 'presentation'); credit.setAttribute('aria-hidden', 'true');
+      credit.textContent = 'Suggestions: © OpenStreetMap contributors';
+      list.appendChild(credit);
+      list.hidden = false; box.setAttribute('aria-expanded', 'true'); active = -1;
+    }
+    function ask() {
+      var q = box.value.replace(/\s+/g, ' ').trim();
+      if (q === lastQ) return;
+      lastQ = q;
+      if (q.length < 4) { close(); return; }
+      if (ctrl) ctrl.abort();
+      ctrl = typeof AbortController === 'function' ? new AbortController() : null;
+      fetch('/api/address?q=' + encodeURIComponent(q), { headers: { Accept: 'application/json' }, signal: ctrl ? ctrl.signal : undefined })
+        .then(function (r) { return r.ok ? r.json() : { suggestions: [] }; })
+        .then(function (j) { if (box.value.replace(/\s+/g, ' ').trim() === q && document.activeElement === box) show(j.suggestions || []); })
+        .catch(function () {});
+    }
+    box.addEventListener('input', function () {
+      if (note) note.textContent = '';
+      clearTimeout(timer); timer = setTimeout(ask, 250);
+    });
+    box.addEventListener('keydown', function (e) {
+      if (list.hidden) return;
+      if (e.key === 'ArrowDown') { e.preventDefault(); highlight(Math.min(items.length - 1, active + 1)); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); highlight(Math.max(-1, active - 1)); }
+      else if (e.key === 'Enter' && active >= 0) { e.preventDefault(); choose(active); }
+      else if (e.key === 'Escape') { e.preventDefault(); close(); }
+    });
+    box.addEventListener('blur', function () { setTimeout(close, 150); });
+  }
+  function startAll() { video(); addressSuggestions(); start(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', startAll); else startAll();
 })();
