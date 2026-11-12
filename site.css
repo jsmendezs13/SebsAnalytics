@@ -47,9 +47,17 @@ section[id] { scroll-margin-top: 12px; }
 .vid-btn { position: absolute; right: 12px; bottom: 12px; width: 44px; height: 44px; border-radius: 50%; border: none; background: rgba(0, 30, 151, 0.78); color: #FFFFFF; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
 .vid-btn:hover { background: rgba(0, 30, 151, 0.95); }
 
-/* Research: the moving mountains (js/mountains.js) */
+/* Research: the flowing waves (js/waves.js). The ends fade out and go soft, like a photo with the middle in focus. */
 .research-art { position: relative; aspect-ratio: 520 / 400; }
-.research-art canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.research-art canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 15%, #000 85%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 15%, #000 85%, transparent 100%); }
+.research-art::before, .research-art::after { content: ''; position: absolute; top: 0; bottom: 0; width: 24%; z-index: 1; pointer-events: none;
+  -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+.research-art::before { left: 0; -webkit-mask-image: linear-gradient(90deg, #000 20%, transparent); mask-image: linear-gradient(90deg, #000 20%, transparent); }
+.research-art::after { right: 0; -webkit-mask-image: linear-gradient(270deg, #000 20%, transparent); mask-image: linear-gradient(270deg, #000 20%, transparent); }
+/* when the words go under the drawing (phones, tablets), the drawing is wider than tall */
+@media (max-width: 1110px) { .research-art { aspect-ratio: 520 / 290; } }
 
 /* the address box: suggestions while typing (js/home.js, api/address.js) */
 .addr-field { position: relative; }
