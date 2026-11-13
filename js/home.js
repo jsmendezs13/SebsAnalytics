@@ -270,6 +270,119 @@
     });
     box.addEventListener('blur', function () { setTimeout(close, 150); });
   }
-  function startAll() { video(); addressSuggestions(); start(); }
+  // The carousel at the top (13 Nov): one phone screen for each thing the system does, on a 3D ring like the food caves
+  // (13 Nov 10:42–10:43: "make it continue … infinity", "different sizes like in 3D, no plain"). The screen in front is big;
+  // the others get smaller, turn and go further back on each side, and it goes round without end in both directions.
+  // Swipe or drag, tap a side screen, the arrows, the dots or the keyboard. It moves on by itself every 4.5 s while it is on
+  // screen, waits 5 s after someone uses it, and stops for the Stop button, while the pointer or the keyboard is on it,
+  // and always with "reduce motion".
+  function carousel() {
+    var root = document.getElementById('car'), stage = document.getElementById('car-stage');
+    if (!root || !stage) return;
+    var items = [].slice.call(stage.querySelectorAll('.car-slide')), dots = [].slice.call(root.querySelectorAll('.car-dot'));
+    var N = items.length, cap = document.getElementById('car-cap'), pauseBtn = document.getElementById('car-pause');
+    var capT = cap.querySelector('.car-title'), capL = cap.querySelector('.car-line');
+    var reduce = false, stopped = false, hovering = false, seen = true, lastUse = 0;
+    var pos = 0, target = 0, from = 0, t0 = 0, raf = 0, cur = -1, drag = null;
+    try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+    if (!N) return;
+    function small() { try { return window.matchMedia('(max-width: 599px)').matches; } catch (e) { return false; } }
+    function gap() { return small() ? 112 : 192; }                      // px from the front screen to the next one (they overlap)
+    function ring(d) { d = ((d % N) + N) % N; return d > N / 2 ? d - N : d; }   // the shortest way round, signed
+    function layout() {
+      var S = gap();
+      items.forEach(function (el, i) {
+        var d = ring(i - pos), a = Math.abs(d), sg = d < 0 ? -1 : 1;
+        var x = sg * S * (1 - Math.pow(0.76, a)) / 0.24;                // each next screen a little closer than the last
+        // 13 Nov 11:01: one over the other, a little see-through (the front one solid), like the caves
+        var op = a <= 2 ? 1 - 0.23 * a : Math.max(0, 0.54 - (a - 2) * 0.75);
+        // each screen turned with its own perspective, stacked by z-index (front on top): no screen can cut through another
+        // 13 Nov 10:59: turned like the food caves — the outer edge comes forward, so each side screen opens toward the middle;
+        // 11:03: "demasiado cerradas … reducir un poco el grado de inclinación" → 16° (was 26°)
+        el.style.transform = 'translateX(' + x.toFixed(1) + 'px) perspective(1100px) rotateY(' + (-sg * 16 * Math.min(a, 1)).toFixed(2) + 'deg) scale(' + Math.pow(0.8, a).toFixed(4) + ')';
+        el.style.opacity = op.toFixed(3);
+        el.style.zIndex = String(200 - Math.round(a * 20));
+        el.style.visibility = op < 0.02 ? 'hidden' : 'visible';
+      });
+      var i = ((Math.round(pos) % N) + N) % N;
+      if (i !== cur) mark(i);
+    }
+    function mark(i) {
+      cur = i;
+      items.forEach(function (el, k) { el.classList.toggle('on', k === i); });
+      dots.forEach(function (d, k) { if (k === i) d.setAttribute('aria-current', 'true'); else d.removeAttribute('aria-current'); });
+      capT.textContent = items[i].querySelector('.car-title').textContent;
+      capL.textContent = items[i].querySelector('.car-line').textContent;
+    }
+    function frame(now) {
+      var k = Math.min(1, (now - t0) / 650), e = 1 - Math.pow(1 - k, 3);
+      pos = from + (target - from) * e; layout();
+      if (k < 1) raf = requestAnimationFrame(frame);
+      else { raf = 0; pos = target = ((Math.round(target) % N) + N) % N; layout(); }   // keep the numbers small; same picture
+    }
+    function moveTo(t) {
+      target = t;
+      if (reduce) { pos = target = ((Math.round(t) % N) + N) % N; layout(); return; }
+      from = pos; t0 = performance.now();
+      if (!raf) raf = requestAnimationFrame(frame);
+    }
+    function step(d) { moveTo(Math.round(target) + d); }
+    function goTo(i) { moveTo(Math.round(target) + ring(i - Math.round(target))); }
+    function used() { lastUse = Date.now(); cap.setAttribute('aria-live', 'polite'); }
+    function setStopped(v) {
+      stopped = v;
+      pauseBtn.setAttribute('aria-label', v ? 'Play the slides' : 'Stop the slides');
+      pauseBtn.innerHTML = v
+        ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5z"/></svg>'
+        : '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>';
+    }
+    function tick() { if (!stopped && !hovering && seen && !document.hidden && !drag && Date.now() - lastUse > 5000) step(1); }
+    root.querySelector('.car-prev').addEventListener('click', function () { used(); step(-1); });
+    root.querySelector('.car-next').addEventListener('click', function () { used(); step(1); });
+    dots.forEach(function (d, i) { d.addEventListener('click', function () { used(); goTo(i); }); });
+    pauseBtn.addEventListener('click', function () { setStopped(!stopped); });
+    // swipe or drag the ring; a tap on a side screen brings it to the front
+    stage.addEventListener('pointerdown', function (e) {
+      if (e.button || e.target.closest('.car-arrow')) return;
+      if (raf) { cancelAnimationFrame(raf); raf = 0; }
+      var hit = e.target.closest('.car-slide');
+      drag = { x: e.clientX, p: pos, last: e.clientX, lt: performance.now(), v: 0, moved: false, slide: hit ? items.indexOf(hit) : -1, id: e.pointerId };
+      used();
+    });
+    stage.addEventListener('pointermove', function (e) {
+      if (!drag || e.pointerId !== drag.id) return;
+      var dx = e.clientX - drag.x;
+      if (!drag.moved && Math.abs(dx) > 6) { drag.moved = true; try { stage.setPointerCapture(e.pointerId); } catch (er) {} }
+      if (!drag.moved) return;
+      var now = performance.now(), dt = Math.max(1, now - drag.lt);
+      drag.v = 0.8 * drag.v + 0.2 * (-(e.clientX - drag.last) / gap()) / (dt / 1000);
+      drag.last = e.clientX; drag.lt = now;
+      pos = target = drag.p - dx / gap(); layout();
+    });
+    function release(e) {
+      if (!drag || (e && e.pointerId !== drag.id)) return;
+      var d = drag; drag = null; used();
+      if (d.moved) moveTo(Math.round(pos + Math.max(-0.6, Math.min(0.6, d.v * 0.15))));   // a quick flick carries on to the next screen
+      else if (d.slide >= 0 && d.slide !== cur) goTo(d.slide);
+      else moveTo(Math.round(pos));
+    }
+    stage.addEventListener('pointerup', release);
+    stage.addEventListener('pointercancel', release);
+    stage.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight') { e.preventDefault(); used(); step(1); }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); used(); step(-1); }
+    });
+    root.addEventListener('mouseenter', function () { hovering = true; });
+    root.addEventListener('mouseleave', function () { hovering = false; });
+    root.addEventListener('focusin', function () { hovering = true; });
+    root.addEventListener('focusout', function () { hovering = false; });
+    try { new IntersectionObserver(function (es) { seen = es[0].isIntersecting; }).observe(root); } catch (e) {}
+    window.addEventListener('resize', layout);
+    setStopped(reduce);
+    layout();
+    if (!reduce) setInterval(tick, 4500);
+  }
+
+  function startAll() { video(); carousel(); addressSuggestions(); start(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', startAll); else startAll();
 })();

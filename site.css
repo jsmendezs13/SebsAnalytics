@@ -68,3 +68,48 @@ section[id] { scroll-margin-top: 12px; }
 .addr-list .addr-credit:hover { background: none; color: #5A6170; }
 .addr-note { font-size: 13px; color: #5A6170; min-height: 0; }
 .addr-note:empty { display: none; }
+
+/* the logo (12 Nov): his eagle + "Seb's Analytics" in a blue box */
+.brand { display: block; line-height: 0; }
+.brand img { display: block; height: 58px; width: auto; }
+.foot-logo { display: block; height: 64px; width: auto; box-shadow: 0 0 0 2px #FFFFFF; }   /* the same blue logo; the frame shows the box on the blue footer */
+@media (max-width: 600px) { .brand img { height: 46px; } .foot-logo { height: 56px; } }
+
+/* the menu words under the big title (13 Nov): small spaced capitals, a little bigger than the old top line (15 px) */
+.hero-menu { font-size: 18px; max-width: 960px; }
+@media (max-width: 600px) { .hero-menu { font-size: 16px; } }
+
+/* ── the carousel at the top (13 Nov): one phone screen for each thing the system does, on a 3D ring like the food
+   caves — the one in front big, the others smaller, turned and further back on each side (js/home.js places them) ── */
+.car { position: relative; margin: 48px auto 0; max-width: 1240px; }
+.car-stage { position: relative; height: 600px; touch-action: pan-y; user-select: none; -webkit-user-select: none;
+  cursor: grab; outline: none; overflow: hidden; }
+.car-stage:active { cursor: grabbing; }
+.car-stage:focus-visible { outline: 2px solid #FFFFFF; outline-offset: 4px; border-radius: 16px; }
+.car-ring { list-style: none; margin: 0; padding: 0; position: absolute; inset: 0; }
+.car-slide { position: absolute; left: 50%; top: 14px; width: 262px; margin-left: -131px; transform-origin: 50% 50%; will-change: transform, opacity; }
+.car-slide img { width: 100%; height: auto; display: block; pointer-events: none; -webkit-user-drag: none; filter: drop-shadow(0 22px 30px rgba(0, 8, 50, 0.5)); }
+.car-slide .car-title, .car-slide .car-line { display: none; }
+.car-cap { margin: 6px auto 0; min-height: 76px; max-width: 520px; text-align: center; }
+.car-cap .car-title { display: block; font-family: 'Lora', Georgia, serif; font-weight: 700; font-size: 24px; color: #FFFFFF; }
+.car-cap .car-line { display: block; margin-top: 4px; font-size: 16px; line-height: 1.45; color: #C6D6FF; }
+.car-arrow { position: absolute; top: 260px; z-index: 300; width: 48px; height: 48px; border-radius: 50%; border: 0; background: #FFFFFF; color: #001E97;
+  display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 8px 22px rgba(0, 8, 50, 0.35); }
+.car-prev { left: 4px; } .car-next { right: 4px; }
+.car-arrow:focus-visible, .car-dot:focus-visible, .car-pause:focus-visible { outline: 2px solid #FFFFFF; outline-offset: 3px; }
+.car-bar { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 10px; }
+.car-dots { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; }
+.car-dot { width: 24px; height: 24px; border: 0; padding: 0; background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.car-dot::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.4); transition: background 0.2s, transform 0.2s; }
+.car-dot[aria-current="true"]::after { background: #FFFFFF; transform: scale(1.35); }
+.car-pause { width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid rgba(255, 255, 255, 0.6); background: none; color: #FFFFFF; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; }
+@media (max-width: 599px) {
+  .car { margin-top: 36px; }
+  .car-stage { height: 452px; }
+  .car-slide { width: 196px; margin-left: -98px; top: 10px; }
+  .car-arrow { top: 190px; width: 42px; height: 42px; }
+  .car-prev { left: 0; } .car-next { right: 0; }
+  .car-cap .car-title { font-size: 21px; } .car-cap .car-line { font-size: 15px; }
+  .car-dot { width: 20px; }
+}
